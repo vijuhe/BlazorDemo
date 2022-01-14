@@ -1,0 +1,22 @@
+﻿<div class="container">
+    <table class="table">
+        <tr>
+            <th>Id</th>
+        </tr>
+    
+        @if(Rows != null)
+        {
+            @foreach(var row in Rows)
+            {
+                <tr>
+                    <td>@row.ToString()</td>
+                </tr>
+            }        
+        }
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyCollection<Guid> Rows { get; set; }
+}

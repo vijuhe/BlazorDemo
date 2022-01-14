@@ -1,0 +1,37 @@
+﻿@using BlazorServer.Data
+@using BlazorServer.Model
+@inject IDataRepository dataRepository;
+
+<div class="container">
+    <EditForm Model="@model" OnValidSubmit="@GetData">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <p>
+            <label>How many rows more do you want to get?
+                <InputNumber @bind-Value="model.RowCount" />
+            </label>
+        </p>
+        <button class="btn-primary" type"submit">Get!</button>
+    </EditForm>
+</div>
+
+<DataTable Rows="@data" />
+
+@code {
+    [Parameter]
+    public int SuggestedNewDataRows { get; set; }
+
+    private DataModel model = new();
+    private IReadOnlyCollection<Guid> data;
+
+    protected override void OnInitialized()
+    {
+        model.RowCount = SuggestedNewDataRows;
+    }
+
+    private void GetData()
+    {
+        data = dataRepository.GetData(model.RowCount);
+    }
+}

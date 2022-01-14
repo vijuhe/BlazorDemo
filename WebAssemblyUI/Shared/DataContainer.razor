@@ -1,0 +1,40 @@
+﻿@using Common
+@inject IHttpClientFactory httpClientFactory;
+
+<div class="container">
+    <EditForm Model="@request" OnValidSubmit="@GetData">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <p>
+            <label>How many rows more do you want to get?
+                <InputNumber @bind-Value="request.RowCount" />
+            </label>
+        </p>
+        <button class="btn-primary" type"submit">Get!</button>
+    </EditForm>
+</div>
+
+<DataTable Rows="@data?.Values" />
+
+@code {
+    [Parameter]
+    public int SuggestedNewDataRows { get; set; }
+
+    private DataRequest request = new();
+    private DataResponse data;
+
+    protected override void OnInitialized()
+    {
+        request.RowCount = SuggestedNewDataRows;
+    }
+
+    private async Task GetData()
+    {
+        var httpClient = httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7119/");
+        using var response = await httpClient.GetAsync($"data?rowCount={request.RowCount}");
+        response?.EnsureSuccessStatusCode();
+        data = await response.Content.ReadFromJsonAsync<DataResponse>();
+    }
+}
